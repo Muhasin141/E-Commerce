@@ -36,7 +36,6 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  // ⭐️ ADDED: Force TypeScript to a compatible version (e.g., latest 4.x)
   "overrides": {
     "typescript": "4.9.5"
   }
