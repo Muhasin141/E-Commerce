@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 
-// Helper function to calculate the cart total (Keep this)
+// Helper function to calculate the cart total
 const calculateTotal = (cart) => {
   return cart.reduce((total, item) => {
     const price = item.product?.price || 0;
@@ -11,7 +11,7 @@ const calculateTotal = (cart) => {
   }, 0);
 };
 
-// Component for a single cart item row (FIXED: Whitespace removed inside <td> tags)
+// Component for a single cart item row
 const CartItemRow = ({ item, updateCart, updateWishlist }) => {
   const product = item.product;
 
@@ -40,8 +40,9 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
   };
 
   return (
+    // FIX: Ensure no whitespace text nodes inside <tr> and <td>
     <tr className="align-middle">
-      {/* Product Image and Name (Column 1) - Content moved to start of line */}
+      {/* Product Image and Name (Column 1) */}
       <td>
         <div className="d-flex align-items-center">
           <img
@@ -64,10 +65,10 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
         </div>
       </td>
 
-      {/* Price (Column 2) - Content moved to start of line */}
+      {/* Price (Column 2) */}
       <td>₹{product.price.toFixed(2)}</td>
 
-      {/* Quantity Controls (Column 3) - Content moved to start of line */}
+      {/* Quantity Controls (Column 3) */}
       <td>
         <div className="d-flex align-items-center">
           <button
@@ -87,10 +88,10 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
         </div>
       </td>
 
-      {/* Subtotal (Column 4) - Content moved to start of line */}
+      {/* Subtotal (Column 4) */}
       <td className="fw-bold">₹{(product.price * item.quantity).toFixed(2)}</td>
 
-      {/* Remove & Move to Wishlist (Column 5) - Content moved to start of line */}
+      {/* Remove & Move to Wishlist (Column 5) */}
       <td>
         <div className="d-flex align-items-center justify-content-center">
           {/* 1. Remove Button (Left) */}
@@ -118,46 +119,25 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
 
 // Main CartPage component
 const CartPage = () => {
+  // Destructure handlers directly from the context for use in handleCheckout/CartItemRow
   const {
-    state: { cart, loading, userDetails },
+    state: { cart, loading },
     updateCart,
     updateWishlist,
-    placeOrder,
-    addAlert,
   } = useAppContext();
 
   const navigate = useNavigate();
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const totalAmount = calculateTotal(cart);
-  const hasAddress = userDetails?.addresses?.length > 0;
 
-  const handleCheckout = async () => {
-    if (isPlacingOrder || totalAmount === 0 || !hasAddress) return;
-
-    const defaultAddress = userDetails?.addresses?.[0];
-
-    if (!defaultAddress) {
-      addAlert("Order requires at least one saved delivery address.", "danger");
+  // ⭐️ MODIFIED: Navigates to the CheckoutPage route ⭐️
+  const handleCheckout = () => {
+    if (totalAmount === 0) {
+      // Optional: Use addAlert if you re-import it, or rely on button disabling.
       return;
     }
-
-    setIsPlacingOrder(true);
-
-    try {
-      const response = await placeOrder(defaultAddress._id, totalAmount);
-
-      navigate(`/order-success/${response.orderId}`, {
-        state: {
-          totalAmount: totalAmount,
-          message: response.message || "Order processed successfully.",
-        },
-      });
-    } catch (error) {
-      console.error("Final checkout handling failed:", error);
-    } finally {
-      setIsPlacingOrder(false);
-    }
+    // Redirect to the dedicated checkout page
+    navigate("/checkout");
   };
 
   // --- 1. Loading State Check (Early Return) ---
@@ -206,7 +186,7 @@ const CartPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* FIX APPLIED HERE: Ensure map content starts/ends without extra newlines */}
+                {/* FIX APPLIED: Keep mapping concise to avoid hydration error whitespace */}
                 {cart.map((item) => (
                   <CartItemRow
                     key={`${item.product?._id}-${item.size || "no-size"}`}
@@ -240,33 +220,14 @@ const CartPage = () => {
                 </li>
               </ul>
 
-              {/* Checkout Button */}
+              {/* Checkout Button - MODIFIED */}
               <button
                 className="btn btn-success d-block btn-lg"
                 onClick={handleCheckout}
-                disabled={isPlacingOrder || totalAmount === 0 || !hasAddress}
+                disabled={totalAmount === 0}
               >
-                {isPlacingOrder ? (
-                  <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
-                    Processing...
-                  </>
-                ) : (
-                  `Proceed to Order Confirmation`
-                )}
+                Proceed to Checkout
               </button>
-
-              {/* Alert if address is missing */}
-              {!hasAddress && (
-                <div className="alert alert-danger mt-2 p-2 small">
-                  Please add an address in your{" "}
-                  <Link to="/profile">Profile</Link> to checkout.
-                </div>
-              )}
 
               <Link
                 to="/products"

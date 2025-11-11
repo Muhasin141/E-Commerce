@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, RouterProvider } from "react-router-dom";
 import { AppProvider } from "./contexts/AppContext"; // Your context file
 // ⭐ NEW: Import ToastContainer and CSS
 import { ToastContainer } from "react-toastify";
@@ -17,6 +17,7 @@ import WishlistPage from "./pages/Wishlist.js"; // Required for Feature 5
 import UserProfile from "./pages/UserProfile.js"; // Required for Feature 9 (Profile & Address)
 import OrderConfirmPage from "./pages/OrderConfirmationPage";
 import OrderDetails from "./pages/OrderDetails";
+import CheckoutPage from "./pages/CheckoutPage";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "./components/Footer";
@@ -77,6 +78,8 @@ function App() {
 
               {/* Specific Order Details Page */}
               <Route path="/order/:orderId" element={<OrderDetails />} />
+
+              <Route path="/checkout" element={<CheckoutPage />} />
 
               {/* 404 Page (Always good practice) */}
               <Route
