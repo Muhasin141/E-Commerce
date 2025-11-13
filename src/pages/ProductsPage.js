@@ -6,7 +6,7 @@ import ProductCard from "./ProductCard";
 
 const ProductsPage = () => {
   const {
-    state: { products, loading, searchTerm: globalSearchTerm }, // Removed 'wishlist' as it's not used here anymore
+    state: { products, loading, searchTerm: globalSearchTerm },
     updateCart,
     updateWishlist,
     fetchProducts,
@@ -15,36 +15,54 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category");
 
+  // State to manage if the component has completed its initial load/sync
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
   const [filters, setFilters] = useState({
+    // Initialize categories only once based on the URL parameter
     categories: initialCategory ? [initialCategory] : [],
     rating: 0,
     sortBy: null,
-    priceRange: [50, 2000],
+    priceRange: [50, 2000], // Assuming default min/max price
     searchTerm: globalSearchTerm || "",
   });
 
-  // Effect to Sync Local Filters with Global Search Term
+  // --- Effect 1: Handle Initial Sync (Global Search & URL Category) ---
   useEffect(() => {
+    // 1. Sync Global Search Term (This must always run)
     if (filters.searchTerm !== (globalSearchTerm || "")) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         searchTerm: globalSearchTerm || "",
       }));
     }
-    if (initialCategory && !filters.categories.includes(initialCategory)) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        categories: [initialCategory],
-      }));
+
+    // 2. Handle Initial URL Category Load (Runs only on mount)
+    // This ensures that the URL category is captured on first load
+    // but prevents re-forcing it into state on subsequent user interactions.
+    if (isInitialLoad) {
+      if (initialCategory) {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          // Use the initialCategory found in the URL if present
+          categories: [initialCategory],
+        }));
+      }
+      // Set to false after the initial checks are done
+      setIsInitialLoad(false);
     }
+
+    // ⚠️ CRITICAL: The old logic that forced re-sync based on URL category
+    // has been removed, resolving the unchecking issue.
+
   }, [
     globalSearchTerm,
     initialCategory,
     filters.searchTerm,
-    filters.categories,
+    isInitialLoad, // Depend on this flag to run the initial logic once
   ]);
 
-  // CRITICAL: EFFECT for Server-Side Fetching
+  // --- Effect 2: CRITICAL: Server-Side Fetching based on ALL Filters ---
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -52,6 +70,7 @@ const ProductsPage = () => {
       params.append("q", filters.searchTerm);
     }
 
+    // Important: If categories is empty, the parameter is not added, fetching all products.
     if (filters.categories.length > 0) {
       params.append("category", filters.categories.join(","));
     }
@@ -84,10 +103,9 @@ const ProductsPage = () => {
   );
 
   const handleFilterChange = (newFilters) => {
+    // This is the single source of truth for updating filters from the UI
     setFilters(newFilters);
   };
-
-  // ⭐ NOTE: Removed the redundant isWishlisted function
 
   if (loading) {
     return (
@@ -127,12 +145,6 @@ const ProductsPage = () => {
               <div key={product._id} className="col-md-6 col-lg-4 col-xl-3">
                 <ProductCard
                   product={product}
-                  // NOTE: updateCart and updateWishlist require the size parameter now!
-                  // The ProductCard component is assumed to handle the size selection
-                  // and call the context functions directly.
-                  // If ProductCard is receiving size via props, it needs to be updated.
-                  // However, based on the previous solution, ProductCard uses context directly.
-                  // We will keep the props clean and let ProductCard handle context access.
                 />
               </div>
             ))}
