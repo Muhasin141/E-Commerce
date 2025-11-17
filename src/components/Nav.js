@@ -10,11 +10,11 @@ const Navbar = () => {
   // Use the custom hook to access global state and functions
   const {
     state: { cart, wishlist },
-    setSearchTerm, // 👈 NEW: Get the setter function from AppContext
+    setSearchTerm,
   } = useAppContext();
 
   // State to manage the text currently in the search input field
-  const [searchTerm, setSearchTermLocal] = useState(""); // Renamed local state for clarity
+  const [searchTerm, setSearchTermLocal] = useState("");
 
   // Calculate the total number of items in the cart
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -30,7 +30,6 @@ const Navbar = () => {
     }
 
     // 💥 FIX 2: Navigate to the products page, but without the ?q parameter.
-    // This ensures the user sees the filtered results, even if they started searching on Home.
     if (window.location.pathname !== "/products") {
       navigate(`/products`);
     }
@@ -39,15 +38,19 @@ const Navbar = () => {
   };
 
   return (
-    // Use fixed-top to keep it visible at the top
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="/">
+    // Reverting to py-0 to maintain default height, but you can adjust this.
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow py-3">
+      {/* Container is still px-0 to keep the background full width */}
+      <div className="container-fluid px-0">
+        {/* Keeping px-3 for horizontal padding on the brand link */}
+        <a className="navbar-brand px-3" href="/">
           <i className="bi bi-shop me-2"></i> E-Commerce Store
         </a>
+
         {/* Search Bar */}
+        {/* Keeping px-3 for padding around the search bar when it's visible */}
         <form
-          className="d-flex me-4 d-none d-md-flex"
+          className="d-flex me-4 d-none d-md-flex px-3"
           onSubmit={handleSearchSubmit}
         >
           <input
@@ -55,16 +58,18 @@ const Navbar = () => {
             type="search"
             placeholder="Search products..."
             aria-label="Search"
-            value={searchTerm} // Use local state
+            value={searchTerm}
             onChange={(e) => setSearchTermLocal(e.target.value)}
           />
           <button className="btn btn-outline-light" type="submit">
             <i className="bi bi-search"></i>
           </button>
         </form>
-        {/* ... (rest of the navbar component) ... */}
+
+        {/* Navbar Toggler Button */}
+        {/* Keeping me-3 (margin-end) to push it slightly from the right edge */}
         <button
-          className="navbar-toggler"
+          className="navbar-toggler me-3"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -74,23 +79,29 @@ const Navbar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
+        {/* Collapsible Menu */}
+        {/* Reverting px-3 here to rely on the mx-2 on the list items */}
         <div
           className="collapse navbar-collapse justify-content-end"
           id="navbarNav"
         >
           <ul className="navbar-nav">
-            <li className="nav-item">
+            {/* ✅ ADDED: mx-2 to add horizontal margin between elements */}
+            <li className="nav-item mx-4">
               <a className="nav-link" href="/">
                 Home
               </a>
             </li>
-            <li className="nav-item">
+            {/* ✅ ADDED: mx-2 */}
+            <li className="nav-item mx-4">
               <a className="nav-link" href="/products">
                 Products
               </a>
             </li>
             {/* Wishlist Link with Count */}
-            <li className="nav-item">
+            {/* ✅ ADDED: mx-2 */}
+            <li className="nav-item mx-4">
               <a className="nav-link position-relative" href="/wishlist">
                 <i className="bi bi-heart me-1"></i> Wishlist
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
@@ -99,16 +110,18 @@ const Navbar = () => {
               </a>
             </li>
             {/* Cart Link with Count */}
-            <li className="nav-item">
+            {/* ✅ ADDED: mx-2 */}
+            <li className="nav-item mx-4">
               <a className="nav-link position-relative" href="/cart">
                 <i className="bi bi-heart me-1"></i> Cart
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <span className="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger">
                   {cartItemCount > 0 ? cartItemCount : ""}
                   <span className="visually-hidden">items in cart</span>
                 </span>
               </a>
             </li>
-            <li className="nav-item">
+            {/* ✅ ADDED: mx-2 */}
+            <li className="nav-item mx-4">
               <a className="nav-link" href="/profile">
                 <i className="bi bi-person-circle me-1"></i> Profile
               </a>
@@ -121,3 +134,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
