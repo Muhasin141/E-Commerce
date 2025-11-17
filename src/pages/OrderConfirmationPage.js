@@ -63,7 +63,7 @@ const OrderConfirmPage = () => {
 
           <p className="lead mb-4">
             {message ||
-              "Thank thank you for your purchase. Your order is being processed."}
+              "Thank  you for your purchase. Your order is being processed."}
           </p>
 
           <hr className="my-4" />
@@ -107,3 +107,5 @@ const OrderConfirmPage = () => {
 };
 
 export default OrderConfirmPage;
+
+
