@@ -19,6 +19,8 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
     return null;
   }
 
+  const itemTotal = product.price * item.quantity;
+
   const handleIncrement = () => {
     updateCart(product._id, "ADD", item.size);
   };
@@ -31,16 +33,12 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
     updateCart(product._id, "REMOVE", item.size);
   };
 
-  // Handles moving the item from cart to wishlist
   const handleMoveToWishlist = () => {
-    // 1. Add item to wishlist
     updateWishlist(product._id, "ADD", item.size);
-    // 2. Remove the line item entirely from cart
     updateCart(product._id, "REMOVE", item.size);
   };
 
   return (
-    // FIX: Ensure no whitespace text nodes inside <tr> and <td>
     <tr className="align-middle">
       {/* Product Image and Name (Column 1) */}
       <td>
@@ -61,15 +59,22 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
             {item.size && (
               <p className="text-muted small mb-0">Size: **{item.size}**</p>
             )}
+            {/* Display price and subtotal inline on mobile for context */}
+            <p className="d-block d-sm-none text-muted small mt-1 mb-0">
+              Unit Price: ₹{product.price.toFixed(2)}
+            </p>
+            <p className="d-block d-sm-none fw-bold small">
+              Total: ₹{itemTotal.toFixed(2)}
+            </p>
           </div>
         </div>
       </td>
 
-      {/* Price (Column 2) */}
-      <td>₹{product.price.toFixed(2)}</td>
+      {/* Price (Column 2) - Hidden on extra-small screens */}
+      <td className="d-none d-sm-table-cell">₹{product.price.toFixed(2)}</td>
 
-      {/* Quantity Controls (Column 3) */}
-      <td>
+      {/* Quantity Controls (Column 3) - Ensuring tight horizontal spacing */}
+      <td style={{ width: "100px" }}>
         <div className="d-flex align-items-center">
           <button
             className="btn btn-sm btn-outline-secondary"
@@ -78,7 +83,8 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
           >
             <i className="bi bi-dash"></i>
           </button>
-          <span className="mx-2 fs-5">{item.quantity}</span>
+          {/* Reduced font size for quantity on mobile */}
+          <span className="mx-2 small">{item.quantity}</span>
           <button
             className="btn btn-sm btn-outline-secondary"
             onClick={handleIncrement}
@@ -88,22 +94,24 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
         </div>
       </td>
 
-      {/* Subtotal (Column 4) */}
-      <td className="fw-bold">₹{(product.price * item.quantity).toFixed(2)}</td>
+      {/* Subtotal (Column 4) - Hidden on extra-small screens */}
+      <td className="fw-bold d-none d-sm-table-cell">
+        ₹{itemTotal.toFixed(2)}
+      </td>
 
-      {/* Remove & Move to Wishlist (Column 5) */}
-      <td>
+      {/* Action (Column 5) - Fixed width for mobile to prevent overflow */}
+      <td style={{ width: "95px" }}>
         <div className="d-flex align-items-center justify-content-center">
-          {/* 1. Remove Button (Left) */}
+          {/* Remove Button */}
           <button
-            className="btn btn-sm btn-outline-danger me-2"
+            className="btn btn-sm btn-outline-danger me-1"
             onClick={handleRemove}
             title={`Remove this specific item (${item.size})`}
           >
             <i className="bi bi-trash"></i>
           </button>
 
-          {/* 2. Move to Wishlist Button (Right) */}
+          {/* Move to Wishlist Button */}
           <button
             className="btn btn-sm btn-outline-info"
             onClick={handleMoveToWishlist}
@@ -119,7 +127,6 @@ const CartItemRow = ({ item, updateCart, updateWishlist }) => {
 
 // Main CartPage component
 const CartPage = () => {
-  // Destructure handlers directly from the context for use in handleCheckout/CartItemRow
   const {
     state: { cart, loading },
     updateCart,
@@ -130,13 +137,13 @@ const CartPage = () => {
 
   const totalAmount = calculateTotal(cart);
 
-  // ⭐️ MODIFIED: Navigates to the CheckoutPage route ⭐️
+  // FIX: Define item count string separately to ensure clean JSX interpolation
+  const cartItemString = `${cart.length} item${cart.length !== 1 ? "s" : ""}`;
+
   const handleCheckout = () => {
     if (totalAmount === 0) {
-      // Optional: Use addAlert if you re-import it, or rely on button disabling.
       return;
     }
-    // Redirect to the dedicated checkout page
     navigate("/checkout");
   };
 
@@ -165,28 +172,41 @@ const CartPage = () => {
 
   // --- 3. Main Cart Content Return ---
   return (
-    <div className="container mt-5 pt-3">
-      <h1 className="mb-4">
-        Your Shopping Cart ({cart.length} item{cart.length !== 1 ? "s" : ""})
-      </h1>
+    // FIX: px-0 on mobile, px-md-3 on desktop. This removes the root horizontal overflow.
+    <div className="container-fluid mt-5 pt-3 px-0 px-md-3">
+      {/* Adding manual padding to the heading since the container is px-0 */}
+      <h1 className="mb-4 px-3">Your Shopping Cart ({cartItemString})</h1>
       <div className="row">
         {/* --- Left Column: Cart Items (Table) --- */}
         <div className="col-lg-8">
-          <div className="table-responsive shadow-sm bg-white rounded">
+          {/* Added p-3 here to restore interior spacing */}
+          <div className="table-responsive shadow-sm bg-white rounded p-3">
             <table className="table align-middle">
               <thead className="table-light">
                 <tr>
                   <th scope="col">Product</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Subtotal</th>
-                  <th scope="col" className="text-center">
+                  {/* Hides Price column on extra-small screens */}
+                  <th scope="col" className="d-none d-sm-table-cell">
+                    Price
+                  </th>
+                  <th scope="col" style={{ width: "100px" }}>
+                    Qty
+                  </th>
+                  {/* Hides Subtotal column on extra-small screens */}
+                  <th scope="col" className="d-none d-sm-table-cell">
+                    Subtotal
+                  </th>
+                  {/* Hides Action header on extra-small screens to avoid cutoff */}
+                  <th
+                    scope="col"
+                    className="text-center d-none d-sm-table-cell"
+                    style={{ width: "95px" }}
+                  >
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {/* FIX APPLIED: Keep mapping concise to avoid hydration error whitespace */}
                 {cart.map((item) => (
                   <CartItemRow
                     key={`${item.product?._id}-${item.size || "no-size"}`}
@@ -202,12 +222,15 @@ const CartPage = () => {
 
         {/* --- Right Column: Summary & Checkout --- */}
         <div className="col-lg-4">
-          <div className="card shadow-sm sticky-top" style={{ top: "75px" }}>
+          <div
+            className="card shadow-sm sticky-top mb-4"
+            style={{ top: "75px" }}
+          >
             <div className="card-body">
               <h5 className="card-title mb-4">Summary</h5>
               <ul className="list-group list-group-flush mb-4">
                 <li className="list-group-item d-flex justify-content-between">
-                  <span>Subtotal ({cart.length} items):</span>
+                  <span>Subtotal ({cartItemString}):</span>
                   <span className="fw-bold">₹{totalAmount.toFixed(2)}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between text-success">
@@ -220,14 +243,16 @@ const CartPage = () => {
                 </li>
               </ul>
 
-              {/* Checkout Button - MODIFIED */}
-              <button
-                className="btn btn-success d-block btn-lg"
-                onClick={handleCheckout}
-                disabled={totalAmount === 0}
-              >
-                Proceed to Checkout
-              </button>
+              {/* MODIFIED: Centering the button using w-75 and mx-auto */}
+              <div className="d-flex flex-column align-items-center">
+                <button
+                  className="btn btn-success btn-lg w-75 mx-auto"
+                  onClick={handleCheckout}
+                  disabled={totalAmount === 0}
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
 
               <Link
                 to="/products"
@@ -244,3 +269,4 @@ const CartPage = () => {
 };
 
 export default CartPage;
+
