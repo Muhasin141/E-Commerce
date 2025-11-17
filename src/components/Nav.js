@@ -1,73 +1,80 @@
-import React, { useState } from "react";
-// Import useNavigate to redirect to the /products page after a search
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 
 const Navbar = () => {
-  // Initialize navigate hook
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Use the custom hook to access global state and functions
   const {
     state: { cart, wishlist },
+    searchTerm: globalSearchTerm,
     setSearchTerm,
   } = useAppContext();
 
-  // State to manage the text currently in the search input field
-  const [searchTerm, setSearchTermLocal] = useState("");
+  // Local input state synced with global state
+  const [searchTermLocal, setSearchTermLocal] = useState(
+    globalSearchTerm || ""
+  );
 
-  // Calculate the total number of items in the cart
+  // Sync local search term when global term changes (important after navigating)
+  useEffect(() => {
+    setSearchTermLocal(globalSearchTerm || "");
+  }, [globalSearchTerm]);
+
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  // Get the number of unique items in the wishlist
   const wishlistCount = wishlist.length;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
 
-    // 💥 FIX 1: Update the global search term in the context
-    if (setSearchTerm) {
-      setSearchTerm(searchTerm.trim());
-    }
+    // Update global search term
+    setSearchTerm(searchTermLocal.trim());
 
-    // 💥 FIX 2: Navigate to the products page, but without the ?q parameter.
-    if (window.location.pathname !== "/products") {
-      navigate(`/products`);
+    // Navigate to products page if not already there
+    if (location.pathname !== "/products") {
+      navigate("/products");
     }
+  };
 
-    setSearchTermLocal(""); // Clear the input field after searching
+  const clearSearch = () => {
+    setSearchTermLocal("");
+    setSearchTerm("");
   };
 
   return (
-    // Reverting to py-0 to maintain default height, but you can adjust this.
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow ">
-      {/* Container is still px-0 to keep the background full width */}
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow pt-3">
       <div className="container-fluid px-0">
-        {/* Keeping px-3 for horizontal padding on the brand link */}
-        <a className="navbar-brand px-3" href="/">
+        {/* Brand */}
+        <Link className="navbar-brand px-3" to="/">
           <i className="bi bi-shop me-2"></i> E-Commerce Store
-        </a>
+        </Link>
 
-        {/* Search Bar */}
-        {/* Keeping px-3 for padding around the search bar when it's visible */}
+        {/* Desktop Search Bar */}
         <form
-          className="d-flex me-4 d-none d-md-flex px-3"
+          className="d-none d-md-flex me-4 px-3"
           onSubmit={handleSearchSubmit}
         >
           <input
             className="form-control me-2"
             type="search"
             placeholder="Search products..."
-            aria-label="Search"
-            value={searchTerm}
+            value={searchTermLocal}
             onChange={(e) => setSearchTermLocal(e.target.value)}
           />
-          <button className="btn btn-outline-light" type="submit">
-            <i className="bi bi-search"></i>
+          <button className="btn btn-outline-light me-2" type="submit">
+            Search
+          </button>
+          <button
+            className="btn btn-outline-light"
+            type="button"
+            onClick={clearSearch}
+          >
+            Clear
           </button>
         </form>
 
         {/* Navbar Toggler Button */}
-        {/* Keeping me-3 (margin-end) to push it slightly from the right edge */}
         <button
           className="navbar-toggler me-3"
           type="button"
@@ -80,51 +87,69 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Collapsible Menu */}
-        {/* Reverting px-3 here to rely on the mx-2 on the list items */}
+        {/* Mobile Menu */}
         <div
           className="collapse navbar-collapse justify-content-end"
           id="navbarNav"
         >
           <ul className="navbar-nav">
-            {/* ✅ ADDED: mx-2 to add horizontal margin between elements */}
+            {/* Mobile Search Bar */}
+            <li className="nav-item d-md-none px-3 mb-2 mt-2">
+              <form onSubmit={handleSearchSubmit} className="d-flex">
+                <input
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Search products..."
+                  value={searchTermLocal}
+                  onChange={(e) => setSearchTermLocal(e.target.value)}
+                />
+                <button className="btn btn-outline-light me-2" type="submit">
+                  Search
+                </button>
+                <button
+                  className="btn btn-outline-light"
+                  type="button"
+                  onClick={clearSearch}
+                >
+                  Clear
+                </button>
+              </form>
+            </li>
+
             <li className="nav-item mx-4">
-              <a className="nav-link" href="/">
+              <Link className="nav-link" to="/">
                 Home
-              </a>
+              </Link>
             </li>
-            {/* ✅ ADDED: mx-2 */}
+
             <li className="nav-item mx-4">
-              <a className="nav-link" href="/products">
+              <Link className="nav-link" to="/products">
                 Products
-              </a>
+              </Link>
             </li>
-            {/* Wishlist Link with Count */}
-            {/* ✅ ADDED: mx-2 */}
+
             <li className="nav-item mx-4">
-              <a className="nav-link position-relative" href="/wishlist">
+              <Link className="nav-link position-relative" to="/wishlist">
                 <i className="bi bi-heart me-1"></i> Wishlist
-                <span className="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-info">
-                  {wishlistCount > 0 ? wishlistCount : ""}
+                <span className="badge bg-info position-absolute top-0 start-100 translate-middle">
+                  {wishlistCount}
                 </span>
-              </a>
+              </Link>
             </li>
-            {/* Cart Link with Count */}
-            {/* ✅ ADDED: mx-2 */}
+
             <li className="nav-item mx-4">
-              <a className="nav-link position-relative" href="/cart">
-                <i className="bi bi-heart me-1"></i> Cart
-                <span className="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger">
-                  {cartItemCount > 0 ? cartItemCount : ""}
-                  <span className="visually-hidden">items in cart</span>
+              <Link className="nav-link position-relative" to="/cart">
+                <i className="bi bi-cart me-1"></i> Cart
+                <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                  {cartItemCount}
                 </span>
-              </a>
+              </Link>
             </li>
-            {/* ✅ ADDED: mx-2 */}
+
             <li className="nav-item mx-4">
-              <a className="nav-link" href="/profile">
+              <Link className="nav-link" to="/profile">
                 <i className="bi bi-person-circle me-1"></i> Profile
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -134,6 +159,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
 
