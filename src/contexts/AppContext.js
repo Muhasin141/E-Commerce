@@ -251,7 +251,23 @@ export const AppProvider = ({ children }) => {
 
         const profileRes = await fetchData(`${API_URL}/user/profile`);
         setUserDetails(profileRes);
-        addAlert(`Address ${action.toLowerCase()}ed successfully.`, "success");
+        let successMessage = "";
+
+        switch (action) {
+          case "ADD":
+            successMessage = "Address added successfully.";
+            break;
+          case "UPDATE":
+            successMessage = "Address updated successfully.";
+            break;
+          case "DELETE":
+            successMessage = "Address deleted successfully.";
+            break;
+          default:
+            successMessage = "Address updated.";
+        }
+
+        addAlert(successMessage, "success");
       } catch (error) {
         console.error(`Error ${action} address:`, error);
         addAlert(
@@ -281,8 +297,6 @@ export const AppProvider = ({ children }) => {
       ]);
       setCart(cartRes.cart);
       setOrders(orderRes.orders);
-
-      addAlert("Order placed successfully!", "success");
 
       return res;
     } catch (error) {
