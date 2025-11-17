@@ -39,7 +39,7 @@ const Navbar = () => {
 
   return (
     // Reverting to py-0 to maintain default height, but you can adjust this.
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow py-3">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow pt-3">
       {/* Container is still px-0 to keep the background full width */}
       <div className="container-fluid px-0">
         {/* Keeping px-3 for horizontal padding on the brand link */}
@@ -114,7 +114,7 @@ const Navbar = () => {
             <li className="nav-item mx-4">
               <a className="nav-link position-relative" href="/cart">
                 <i className="bi bi-heart me-1"></i> Cart
-                <span className="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger">
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {cartItemCount > 0 ? cartItemCount : ""}
                   <span className="visually-hidden">items in cart</span>
                 </span>
@@ -134,6 +134,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
 
