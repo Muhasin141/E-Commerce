@@ -199,7 +199,7 @@ const ProductDetails = () => {
             <button
               className={`btn btn-${
                 isWishlisted ? "danger" : "outline-danger"
-              } btn-lg`}
+              } btn-lg me-3`}
               onClick={handleAddToWishlist}
             >
               {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
