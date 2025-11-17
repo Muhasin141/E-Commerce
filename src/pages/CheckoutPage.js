@@ -117,9 +117,7 @@ const CheckoutPage = () => {
         <span
           className="me-2 text-primary"
           style={{ transform: "rotate(90deg)", display: "inline-block" }}
-        >
-          &gt;
-        </span>
+        ></span>
         Order Checkout
       </h1>
 
@@ -176,7 +174,7 @@ const CheckoutPage = () => {
           </div>
 
           {/* Section 2: Review Items (Simple List) */}
-          <div className="card shadow-sm">
+          <div className="card shadow-sm mb-4">
             <div className="card-header bg-light">
               <h5 className="mb-0">2. Order Review ({cart.length} Items)</h5>
             </div>
@@ -268,3 +266,4 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+
