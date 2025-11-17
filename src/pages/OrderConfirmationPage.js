@@ -92,7 +92,7 @@ const OrderConfirmPage = () => {
             </div>
           </div>
 
-          <div className="mt-4 d-flex justify-content-center gap-3">
+          <div className="mt-4 d-flex flex-column flex-md-row justify-content-center gap-3">
             <Link to="/products" className="btn btn-outline-primary btn-lg">
               Continue Shopping
             </Link>
