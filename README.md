@@ -3,6 +3,7 @@
 Full-Stack E-Commerce Web Application (MERN)
 This is a full-stack e-commerce web application built using the MERN Stack that allows users to browse products, view product details, manage cart & wishlist, save delivery addresses, and place orders.
 The system is designed to provide a simple, structured, and real-world shopping experience with clean UI and organized backend APIs.
+
 ---
 
 ##  Demo Link
@@ -10,7 +11,9 @@ The system is designed to provide a simple, structured, and real-world shopping 
 
 ---
 ## Quick Start
-```git clone https://github.com/Muhasin141/E-Commerce.git
+
+```
+git clone https://github.com/Muhasin141/E-Commerce.git
 cd E-Commerce
 npm install
 npm start
@@ -82,27 +85,37 @@ Watch a walkthrough (5–7 minutes) explaining:
 ***GET /api/products***
 Fetch all products<br>
 Sample Response<br>
-``` [{ _id", name,description,price,originalPrice,inStock,availableSizes,category,imageUrl,rating,createdAt,updatedAt}......] ```
+```
+[{ _id", name,description,price,originalPrice,inStock,availableSizes,category,imageUrl,rating,createdAt,updatedAt}......] 
+```
 
 ***GET /api/products/:productId***
 Fetch a product<br>
 Sample Response<br>
-``` [{ _id", name,description,price,originalPrice,inStock,availableSizes,category,imageUrl,rating,createdAt,updatedAt}] ```
+```
+[{ _id", name,description,price,originalPrice,inStock,availableSizes,category,imageUrl,rating,createdAt,updatedAt}]
+ ```
 
 ### Cart API
 ***GET /api/cart***
 Fetch User Cart<br>
 Sample Response<br>
-``` [{product{}, quality,size},.....] ```
+```
+[{product{}, quality,size},.....]
+```
 
 ***POST /api/cart***
 Add item / increase quantity<br>
 Sample Response<br>
-``` [{product Id,size}] ```
+```
+ [{product Id,size}] 
+```
 
 ***DELETE /api/cart/:productId***
 Remove product<br>
-``` [{product Id,size}] ```
+```
+ [{product Id,size}] 
+```
 
 ***DELETE /api/cart/clear***
 Clear entire cart<br>
@@ -160,22 +173,30 @@ Sample Response<br>
 
 
 ### Orders API
+
 ***GET /api/user/orders***
+
 Get all orders of user<br>
 Sample Response<br>
 
-```[{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress:{fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt},
-......]```
+```
+[{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress:{fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt},
+......]
+```
 
 ***GET /api/user/order/:orderId***
 Get single order<br>
 Sample Response<br>
-```{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress {fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt}```
+```
+{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress {fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt}
+```
 
 ***POST /api/user/orders***
 Place order<br>
 Sample Response<br>
-```{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress {fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt}```
+```
+{_id: ,user,items: [{product,name,quantity,price,size }],shippingAddress {fullName,street,city,state,zipCode,phone},totalAmount,orderStatus,createdAt}
+```
  ---
 ## Contact 
 For bugs or feature request, please reach out to muhasinalikhan@gmail.com
