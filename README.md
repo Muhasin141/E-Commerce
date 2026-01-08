@@ -23,7 +23,7 @@ npm start
 ## Technologies 
 - React JS
 - React Router
-- Node JS
+- Node.js
 - Express
 - MongoDB + Mongoose
 - REST APIs
